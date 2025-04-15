@@ -9,6 +9,8 @@ interface Node {
   vy: number;
   connections: number[];
   hovered: boolean;
+  pulseRate: number;
+  pulseOffset: number;
 }
 
 const NeuralBackground: React.FC = () => {
@@ -29,7 +31,9 @@ const NeuralBackground: React.FC = () => {
         vx: (Math.random() - 0.5) * 0.5,
         vy: (Math.random() - 0.5) * 0.5,
         connections: [],
-        hovered: false
+        hovered: false,
+        pulseRate: Math.random() * 0.02 + 0.01,
+        pulseOffset: Math.random() * Math.PI * 2
       });
     }
     
@@ -60,7 +64,7 @@ const NeuralBackground: React.FC = () => {
     return nodes;
   };
 
-  const draw = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+  const draw = (ctx: CanvasRenderingContext2D, width: number, height: number, timestamp: number) => {
     ctx.clearRect(0, 0, width, height);
     
     const nodes = nodesRef.current;
@@ -74,17 +78,32 @@ const NeuralBackground: React.FC = () => {
       for (const connectionIndex of node.connections) {
         const connectedNode = nodes[connectionIndex];
         
-        // Enhanced connection effects for hovered nodes
-        const isEitherNodeHovered = node.hovered || connectedNode.hovered;
+        // Calculate distance for connection opacity
+        const dx = node.x - connectedNode.x;
+        const dy = node.y - connectedNode.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const maxConnectionDistance = 250;
         
-        ctx.beginPath();
-        ctx.moveTo(node.x, node.y);
-        ctx.lineTo(connectedNode.x, connectedNode.y);
-        ctx.strokeStyle = isEitherNodeHovered 
-          ? 'rgba(139, 92, 246, 0.5)' // Brighter purple for hovered node connections
-          : 'rgba(100, 229, 255, 0.1)';
-        ctx.lineWidth = isEitherNodeHovered ? 1.5 : 0.5;
-        ctx.stroke();
+        if (distance < maxConnectionDistance) {
+          // Enhanced connection effects for hovered nodes
+          const isEitherNodeHovered = node.hovered || connectedNode.hovered;
+          
+          // Calculate pulse effect for connections
+          const pulse = Math.sin(timestamp * 0.001 + node.pulseOffset) * 0.2 + 0.8;
+          
+          const opacity = isEitherNodeHovered 
+            ? 0.5
+            : Math.max(0, (1 - distance / maxConnectionDistance) * 0.3) * pulse;
+          
+          ctx.beginPath();
+          ctx.moveTo(node.x, node.y);
+          ctx.lineTo(connectedNode.x, connectedNode.y);
+          ctx.strokeStyle = isEitherNodeHovered 
+            ? `rgba(139, 92, 246, ${opacity})` // Brighter purple for hovered node connections
+            : `rgba(100, 229, 255, ${opacity})`;
+          ctx.lineWidth = isEitherNodeHovered ? 1.5 : 0.8;
+          ctx.stroke();
+        }
       }
       
       // Interact with mouse
@@ -98,37 +117,59 @@ const NeuralBackground: React.FC = () => {
         node.hovered = distance < 30;
         
         if (distance < maxDistance) {
-          const force = (1 - distance / maxDistance) * 0.8; // Increased force for more responsive movement
-          node.vx += dx * force / 80;
-          node.vy += dy * force / 80;
+          const force = (1 - distance / maxDistance) * 1.2; // Increased force for more responsive movement
+          node.vx += dx * force / 60;
+          node.vy += dy * force / 60;
           
           // Draw connection to mouse
           ctx.beginPath();
           ctx.moveTo(node.x, node.y);
           ctx.lineTo(mouse.x, mouse.y);
-          ctx.strokeStyle = `rgba(139, 92, 246, ${0.3 * (1 - distance / maxDistance)})`; // Using purple for mouse connections
-          ctx.lineWidth = 1;
+          ctx.strokeStyle = `rgba(139, 92, 246, ${0.5 * (1 - distance / maxDistance)})`; // Using purple for mouse connections
+          ctx.lineWidth = 1.2;
           ctx.stroke();
         }
       } else {
         node.hovered = false;
       }
       
+      // Apply pulse effect on radius
+      const pulseEffect = Math.sin(timestamp * node.pulseRate + node.pulseOffset) * 0.3 + 1;
+      const currentRadius = node.radius * pulseEffect;
+      
       // Apply velocity with damping
       node.vx *= 0.98;
       node.vy *= 0.98;
+      
+      // Add slight random movement
+      node.vx += (Math.random() - 0.5) * 0.02;
+      node.vy += (Math.random() - 0.5) * 0.02;
       
       // Update position
       node.x += node.vx;
       node.y += node.vy;
       
-      // Bounce off edges
-      if (node.x < 0 || node.x > width) node.vx *= -1;
-      if (node.y < 0 || node.y > height) node.vy *= -1;
+      // Bounce off edges with padding
+      const padding = 50;
+      if (node.x < padding) {
+        node.x = padding;
+        node.vx *= -1;
+      } else if (node.x > width - padding) {
+        node.x = width - padding;
+        node.vx *= -1;
+      }
+      
+      if (node.y < padding) {
+        node.y = padding;
+        node.vy *= -1;
+      } else if (node.y > height - padding) {
+        node.y = height - padding;
+        node.vy *= -1;
+      }
       
       // Draw node with enhanced effects
       ctx.beginPath();
-      ctx.arc(node.x, node.y, node.hovered ? node.radius * 2 : node.radius, 0, Math.PI * 2);
+      ctx.arc(node.x, node.y, node.hovered ? currentRadius * 2 : currentRadius, 0, Math.PI * 2);
       
       // Use different colors and effects based on hover state
       if (node.hovered) {
@@ -136,7 +177,8 @@ const NeuralBackground: React.FC = () => {
         ctx.shadowBlur = 15;
         ctx.shadowColor = 'rgba(139, 92, 246, 0.8)';
       } else {
-        ctx.fillStyle = 'rgba(100, 229, 255, 0.7)';
+        const nodeOpacity = 0.5 + Math.sin(timestamp * 0.001 + node.pulseOffset) * 0.2; // Pulsing opacity
+        ctx.fillStyle = `rgba(100, 229, 255, ${nodeOpacity})`;
         ctx.shadowBlur = 10;
         ctx.shadowColor = 'rgba(100, 229, 255, 0.5)';
       }
@@ -148,14 +190,14 @@ const NeuralBackground: React.FC = () => {
     }
   };
 
-  const animate = () => {
+  const animate = (timestamp: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     
-    draw(ctx, canvas.width, canvas.height);
+    draw(ctx, canvas.width, canvas.height, timestamp);
     frameIdRef.current = requestAnimationFrame(animate);
   };
 
@@ -167,7 +209,7 @@ const NeuralBackground: React.FC = () => {
     canvas.height = window.innerHeight;
     
     // Regenerate nodes when canvas size changes
-    nodesRef.current = generateNodes(60, canvas.width, canvas.height); // Increased node count
+    nodesRef.current = generateNodes(80, canvas.width, canvas.height); // Increased node count for more connections
   };
 
   const handleMouseMove = (e: MouseEvent) => {
@@ -226,7 +268,7 @@ const NeuralBackground: React.FC = () => {
     canvas.height = window.innerHeight;
     
     // Generate initial nodes
-    nodesRef.current = generateNodes(60, canvas.width, canvas.height); // Increased node count
+    nodesRef.current = generateNodes(80, canvas.width, canvas.height); // Increased node count
     
     // Add event listeners
     window.addEventListener('resize', handleResize);
