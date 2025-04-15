@@ -8,8 +8,8 @@ const Hero: React.FC = () => {
     <section id="home" className="min-h-screen flex items-center justify-center pt-16">
       <div className="container mx-auto px-4 text-center">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 gradient-heading animate-float">
-            Data Science & AI Portfolio
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 gradient-heading animate-float italic">
+            Teaching machines to do mistakes faster than humans.
           </h1>
           
           <div className="w-24 h-24 rounded-full bg-neural-lighter mx-auto mb-6 overflow-hidden border-2 border-neural-accent">
@@ -43,7 +43,7 @@ const Hero: React.FC = () => {
             ].map((keyword, index) => (
               <span 
                 key={index}
-                className="text-neural-node font-bold italic px-3 py-1 bg-neural-lighter/50 rounded-full"
+                className="keyword-tag"
               >
                 {keyword}
               </span>

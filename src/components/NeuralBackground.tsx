@@ -8,6 +8,7 @@ interface Node {
   vx: number;
   vy: number;
   connections: number[];
+  hovered: boolean;
 }
 
 const NeuralBackground: React.FC = () => {
@@ -27,7 +28,8 @@ const NeuralBackground: React.FC = () => {
         radius: Math.random() * 2 + 1,
         vx: (Math.random() - 0.5) * 0.5,
         vy: (Math.random() - 0.5) * 0.5,
-        connections: []
+        connections: [],
+        hovered: false
       });
     }
     
@@ -72,11 +74,16 @@ const NeuralBackground: React.FC = () => {
       for (const connectionIndex of node.connections) {
         const connectedNode = nodes[connectionIndex];
         
+        // Enhanced connection effects for hovered nodes
+        const isEitherNodeHovered = node.hovered || connectedNode.hovered;
+        
         ctx.beginPath();
         ctx.moveTo(node.x, node.y);
         ctx.lineTo(connectedNode.x, connectedNode.y);
-        ctx.strokeStyle = 'rgba(100, 229, 255, 0.1)';
-        ctx.lineWidth = 0.5;
+        ctx.strokeStyle = isEitherNodeHovered 
+          ? 'rgba(139, 92, 246, 0.5)' // Brighter purple for hovered node connections
+          : 'rgba(100, 229, 255, 0.1)';
+        ctx.lineWidth = isEitherNodeHovered ? 1.5 : 0.5;
         ctx.stroke();
       }
       
@@ -87,19 +94,24 @@ const NeuralBackground: React.FC = () => {
         const distance = Math.sqrt(dx * dx + dy * dy);
         const maxDistance = 150;
         
+        // Check if node is being hovered
+        node.hovered = distance < 30;
+        
         if (distance < maxDistance) {
-          const force = (1 - distance / maxDistance) * 0.6;
-          node.vx += dx * force / 100;
-          node.vy += dy * force / 100;
+          const force = (1 - distance / maxDistance) * 0.8; // Increased force for more responsive movement
+          node.vx += dx * force / 80;
+          node.vy += dy * force / 80;
           
           // Draw connection to mouse
           ctx.beginPath();
           ctx.moveTo(node.x, node.y);
           ctx.lineTo(mouse.x, mouse.y);
-          ctx.strokeStyle = `rgba(100, 229, 255, ${0.2 * (1 - distance / maxDistance)})`;
-          ctx.lineWidth = 0.5;
+          ctx.strokeStyle = `rgba(139, 92, 246, ${0.3 * (1 - distance / maxDistance)})`; // Using purple for mouse connections
+          ctx.lineWidth = 1;
           ctx.stroke();
         }
+      } else {
+        node.hovered = false;
       }
       
       // Apply velocity with damping
@@ -114,15 +126,25 @@ const NeuralBackground: React.FC = () => {
       if (node.x < 0 || node.x > width) node.vx *= -1;
       if (node.y < 0 || node.y > height) node.vy *= -1;
       
-      // Draw node
+      // Draw node with enhanced effects
       ctx.beginPath();
-      ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(100, 229, 255, 0.7)';
+      ctx.arc(node.x, node.y, node.hovered ? node.radius * 2 : node.radius, 0, Math.PI * 2);
+      
+      // Use different colors and effects based on hover state
+      if (node.hovered) {
+        ctx.fillStyle = 'rgba(139, 92, 246, 0.9)'; // Brighter purple for hovered nodes
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = 'rgba(139, 92, 246, 0.8)';
+      } else {
+        ctx.fillStyle = 'rgba(100, 229, 255, 0.7)';
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = 'rgba(100, 229, 255, 0.5)';
+      }
+      
       ctx.fill();
       
-      // Add glow effect
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = 'rgba(100, 229, 255, 0.5)';
+      // Reset shadow effects to prevent affecting other elements
+      ctx.shadowBlur = 0;
     }
   };
 
@@ -145,7 +167,7 @@ const NeuralBackground: React.FC = () => {
     canvas.height = window.innerHeight;
     
     // Regenerate nodes when canvas size changes
-    nodesRef.current = generateNodes(50, canvas.width, canvas.height);
+    nodesRef.current = generateNodes(60, canvas.width, canvas.height); // Increased node count
   };
 
   const handleMouseMove = (e: MouseEvent) => {
@@ -162,6 +184,11 @@ const NeuralBackground: React.FC = () => {
 
   const handleMouseLeave = () => {
     mouseRef.current.active = false;
+    
+    // Reset hover state on all nodes
+    nodesRef.current.forEach(node => {
+      node.hovered = false;
+    });
   };
 
   const handleTouchMove = (e: TouchEvent) => {
@@ -181,6 +208,11 @@ const NeuralBackground: React.FC = () => {
 
   const handleTouchEnd = () => {
     mouseRef.current.active = false;
+    
+    // Reset hover state on all nodes
+    nodesRef.current.forEach(node => {
+      node.hovered = false;
+    });
   };
 
   useEffect(() => {
@@ -194,7 +226,7 @@ const NeuralBackground: React.FC = () => {
     canvas.height = window.innerHeight;
     
     // Generate initial nodes
-    nodesRef.current = generateNodes(50, canvas.width, canvas.height);
+    nodesRef.current = generateNodes(60, canvas.width, canvas.height); // Increased node count
     
     // Add event listeners
     window.addEventListener('resize', handleResize);
@@ -219,7 +251,8 @@ const NeuralBackground: React.FC = () => {
   return (
     <canvas 
       ref={canvasRef} 
-      className="fixed top-0 left-0 w-full h-full -z-10 cursor-pointer"
+      className="fixed top-0 left-0 w-full h-full -z-10 cursor-pointer interactive-neural"
+      title="Interactive Neural Network - Move your cursor to interact with nodes"
     />
   );
 };

@@ -1,16 +1,49 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Mail, MapPin, Phone, Send, Github, Linkedin, Instagram } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const ContactSection: React.FC = () => {
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real application, we would handle form submission here
-    console.log('Form submitted');
+    setIsSubmitting(true);
+    
+    // In a real application, we would send this data to a server or email API
+    // For now, we'll simulate sending and show a toast message
+    setTimeout(() => {
+      console.log('Form submitted to rikinpithadia98@gmail.com', formData);
+      toast({
+        title: "Message Sent",
+        description: "Your message has been sent to rikinpithadia98@gmail.com",
+      });
+      
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+      });
+      setIsSubmitting(false);
+    }, 1500);
   };
 
   return (
@@ -96,6 +129,9 @@ const ContactSection: React.FC = () => {
                         id="name"
                         placeholder="Your Name"
                         className="bg-neural border-neural-lighter text-white"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
                       />
                     </div>
                     
@@ -106,6 +142,9 @@ const ContactSection: React.FC = () => {
                         type="email"
                         placeholder="Your Email"
                         className="bg-neural border-neural-lighter text-white"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
                       />
                     </div>
                   </div>
@@ -116,6 +155,9 @@ const ContactSection: React.FC = () => {
                       id="subject"
                       placeholder="Subject"
                       className="bg-neural border-neural-lighter text-white"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      required
                     />
                   </div>
                   
@@ -126,11 +168,19 @@ const ContactSection: React.FC = () => {
                       placeholder="Your Message"
                       rows={5}
                       className="bg-neural border-neural-lighter text-white resize-none"
+                      value={formData.message}
+                      onChange={handleChange}
+                      required
                     />
                   </div>
                   
-                  <Button type="submit" className="w-full bg-neural-accent hover:bg-neural-accent/80">
-                    <Send className="mr-2" size={16} /> Send Message
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-neural-accent hover:bg-neural-accent/80 transition-all duration-300 transform hover:scale-105"
+                    disabled={isSubmitting}
+                  >
+                    <Send className="mr-2" size={16} /> 
+                    {isSubmitting ? 'Sending...' : 'Send Message'}
                   </Button>
                 </form>
               </CardContent>
