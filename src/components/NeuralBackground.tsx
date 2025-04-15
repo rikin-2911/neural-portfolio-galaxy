@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface Node {
   x: number;
@@ -15,6 +15,7 @@ const NeuralBackground: React.FC = () => {
   const nodesRef = useRef<Node[]>([]);
   const frameIdRef = useRef<number>(0);
   const isInitializedRef = useRef<boolean>(false);
+  const mouseRef = useRef<{ x: number; y: number; active: boolean }>({ x: 0, y: 0, active: false });
 
   const generateNodes = (numNodes: number, width: number, height: number): Node[] => {
     const nodes: Node[] = [];
@@ -61,6 +62,7 @@ const NeuralBackground: React.FC = () => {
     ctx.clearRect(0, 0, width, height);
     
     const nodes = nodesRef.current;
+    const mouse = mouseRef.current;
     
     // Update node positions and draw connections
     for (let i = 0; i < nodes.length; i++) {
@@ -77,6 +79,32 @@ const NeuralBackground: React.FC = () => {
         ctx.lineWidth = 0.5;
         ctx.stroke();
       }
+      
+      // Interact with mouse
+      if (mouse.active) {
+        const dx = mouse.x - node.x;
+        const dy = mouse.y - node.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const maxDistance = 150;
+        
+        if (distance < maxDistance) {
+          const force = (1 - distance / maxDistance) * 0.6;
+          node.vx += dx * force / 100;
+          node.vy += dy * force / 100;
+          
+          // Draw connection to mouse
+          ctx.beginPath();
+          ctx.moveTo(node.x, node.y);
+          ctx.lineTo(mouse.x, mouse.y);
+          ctx.strokeStyle = `rgba(100, 229, 255, ${0.2 * (1 - distance / maxDistance)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+      
+      // Apply velocity with damping
+      node.vx *= 0.98;
+      node.vy *= 0.98;
       
       // Update position
       node.x += node.vx;
@@ -120,6 +148,41 @@ const NeuralBackground: React.FC = () => {
     nodesRef.current = generateNodes(50, canvas.width, canvas.height);
   };
 
+  const handleMouseMove = (e: MouseEvent) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const rect = canvas.getBoundingClientRect();
+    mouseRef.current = {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+      active: true
+    };
+  };
+
+  const handleMouseLeave = () => {
+    mouseRef.current.active = false;
+  };
+
+  const handleTouchMove = (e: TouchEvent) => {
+    const canvas = canvasRef.current;
+    if (!canvas || e.touches.length === 0) return;
+    
+    const rect = canvas.getBoundingClientRect();
+    mouseRef.current = {
+      x: e.touches[0].clientX - rect.left,
+      y: e.touches[0].clientY - rect.top,
+      active: true
+    };
+    
+    // Prevent scrolling while interacting with canvas
+    e.preventDefault();
+  };
+
+  const handleTouchEnd = () => {
+    mouseRef.current.active = false;
+  };
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || isInitializedRef.current) return;
@@ -133,14 +196,22 @@ const NeuralBackground: React.FC = () => {
     // Generate initial nodes
     nodesRef.current = generateNodes(50, canvas.width, canvas.height);
     
+    // Add event listeners
+    window.addEventListener('resize', handleResize);
+    canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('mouseleave', handleMouseLeave);
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+    canvas.addEventListener('touchend', handleTouchEnd);
+    
     // Start animation
     frameIdRef.current = requestAnimationFrame(animate);
     
-    // Handle window resize
-    window.addEventListener('resize', handleResize);
-    
     return () => {
       window.removeEventListener('resize', handleResize);
+      canvas.removeEventListener('mousemove', handleMouseMove);
+      canvas.removeEventListener('mouseleave', handleMouseLeave);
+      canvas.removeEventListener('touchmove', handleTouchMove);
+      canvas.removeEventListener('touchend', handleTouchEnd);
       cancelAnimationFrame(frameIdRef.current);
     };
   }, []);
@@ -148,7 +219,7 @@ const NeuralBackground: React.FC = () => {
   return (
     <canvas 
       ref={canvasRef} 
-      className="fixed top-0 left-0 w-full h-full -z-10"
+      className="fixed top-0 left-0 w-full h-full -z-10 cursor-pointer"
     />
   );
 };

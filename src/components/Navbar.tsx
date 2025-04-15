@@ -28,7 +28,7 @@ const Navbar: React.FC = () => {
     >
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <a href="#home" className="text-xl font-bold text-white">
-          <span className="gradient-heading">DataSci</span>Portfolio
+          <span className="gradient-heading">Rikin</span>Pithadia
         </a>
 
         {/* Desktop Navigation */}

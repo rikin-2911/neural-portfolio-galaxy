@@ -18,7 +18,7 @@ const skillCategories: SkillCategory[] = [
       { name: 'Python', proficiency: 95 },
       { name: 'R', proficiency: 85 },
       { name: 'SQL', proficiency: 90 },
-      { name: 'JavaScript', proficiency: 75 },
+      { name: 'C', proficiency: 75 },
     ],
   },
   {
@@ -39,6 +39,15 @@ const skillCategories: SkillCategory[] = [
       { name: 'Tableau/Power BI', proficiency: 80 },
     ],
   },
+  {
+    name: 'AI Tools',
+    skills: [
+      { name: 'Jupyter Notebooks', proficiency: 95 },
+      { name: 'Google Colab', proficiency: 90 },
+      { name: 'MATLAB', proficiency: 85 },
+      { name: 'Azure ML Studio', proficiency: 80 },
+    ],
+  },
 ];
 
 const SkillsSection: React.FC = () => {
@@ -47,7 +56,7 @@ const SkillsSection: React.FC = () => {
       <div className="container mx-auto px-4">
         <h2 className="section-heading text-center">Skills</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {skillCategories.map((category) => (
             <Card key={category.name} className="bg-neural-lighter border-neural-lighter">
               <CardContent className="pt-6">
@@ -65,7 +74,6 @@ const SkillsSection: React.FC = () => {
                       <Progress
                         value={skill.proficiency}
                         className="h-2 bg-gray-700"
-                        indicatorClassName="bg-gradient-to-r from-blue-500 to-neural-accent"
                       />
                     </div>
                   ))}

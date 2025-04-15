@@ -5,61 +5,51 @@ import { Briefcase, GraduationCap, Award } from 'lucide-react';
 
 const educationHistory = [
   {
-    degree: 'Ph.D. in Artificial Intelligence',
-    institution: 'Stanford University',
-    year: '2020 - Present',
-    description: 'Research focus on reinforcement learning and generative models for predictive analytics.',
+    degree: 'Bachelor of Science (BS) Honors in Data Science and AI',
+    institution: 'Indian Institute of Technology - Guwahati, Assam',
+    year: '2023 - 2027',
+    description: 'Focusing on advanced machine learning algorithms, neural networks, and data analytics. Participating in cutting-edge research on AI applications in various domains. Exploring the integration of AI with IoT and cloud computing technologies for real-time data processing and analytics.',
+    cgpa: '7.25/10.0'
   },
   {
-    degree: 'M.S. in Data Science',
-    institution: 'Massachusetts Institute of Technology',
-    year: '2017 - 2019',
-    description: 'Specialized in machine learning and statistical modeling with a thesis on deep learning for time series forecasting.',
-  },
-  {
-    degree: 'B.S. in Computer Science',
-    institution: 'University of California, Berkeley',
-    year: '2013 - 2017',
-    description: 'Focus on algorithms, data structures, and foundational mathematics for computing.',
-  },
+    degree: 'BTech in Mechanical Engineering',
+    institution: 'Government Engineering College, Gandhinagar',
+    year: '2023 - 2027',
+    description: 'Currently pursuing studies in mechanical engineering with a focus on computational methods and simulation. Exploring the integration of AI and machine learning in mechanical systems design, predictive maintenance, and automated manufacturing processes.',
+    cgpa: '7.25/10.0'
+  }
 ];
 
 const workHistory = [
   {
-    position: 'AI Research Intern',
-    company: 'Google Research',
-    year: '2021 - Present',
-    description: 'Developing novel approaches to deep reinforcement learning for autonomous systems.',
+    position: 'Data Science Research Assistant',
+    company: 'AI Research Lab, IIT Guwahati',
+    year: '2023 - Present',
+    description: 'Working on research projects related to deep learning applications in computer vision and natural language processing. Contributing to publications and presentations at academic conferences.',
   },
   {
-    position: 'Data Scientist',
-    company: 'Spotify',
-    year: '2019 - 2021',
-    description: 'Built recommendation systems and user personalization algorithms that increased user engagement by 22%.',
-  },
-  {
-    position: 'Machine Learning Engineer Intern',
-    company: 'Tesla',
-    year: '2018 - 2019',
-    description: 'Worked on computer vision systems for autopilot feature enhancement and optimization.',
-  },
+    position: 'AI & ML Workshop Participant',
+    company: 'TechLearn Academy',
+    year: '2023',
+    description: 'Completed intensive training in advanced machine learning algorithms and deep neural networks. Developed projects on image classification and sentiment analysis using TensorFlow and PyTorch.',
+  }
 ];
 
 const awards = [
   {
-    title: 'Outstanding Research Award',
-    organization: 'International Conference on Machine Learning',
-    year: '2022',
+    title: 'AI Innovation Challenge Finalist',
+    organization: 'National AI Summit',
+    year: '2023',
   },
   {
     title: 'Data Science Hackathon Winner',
-    organization: 'Kaggle Competition',
-    year: '2021',
+    organization: 'College Tech Fest',
+    year: '2023',
   },
   {
-    title: 'Dean\'s List Recognition',
-    organization: 'MIT',
-    year: '2017-2019',
+    title: 'Academic Excellence Award',
+    organization: 'IIT Guwahati',
+    year: '2023',
   },
 ];
 
@@ -84,6 +74,7 @@ const AboutSection: React.FC = () => {
                       <span className="text-neural-node">{item.year}</span>
                     </div>
                     <p className="text-gray-400 mb-2">{item.institution}</p>
+                    <p className="text-gray-300 mb-2"><span className="font-medium">CGPA:</span> {item.cgpa}</p>
                     <p className="text-gray-300">{item.description}</p>
                   </CardContent>
                 </Card>

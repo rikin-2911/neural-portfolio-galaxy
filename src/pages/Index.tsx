@@ -21,7 +21,7 @@ const Index = () => {
       
       <footer className="py-8 text-center text-gray-400 bg-neural">
         <div className="container mx-auto px-4">
-          <p>© {new Date().getFullYear()} Data Science Portfolio. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Rikin Pithadia | Data Science & AI Portfolio. All rights reserved.</p>
         </div>
       </footer>
     </div>

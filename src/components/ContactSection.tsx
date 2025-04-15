@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
-import { Mail, MapPin, Phone, Send } from 'lucide-react';
+import { Mail, MapPin, Phone, Send, Github, Linkedin, Instagram } from 'lucide-react';
 
 const ContactSection: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
@@ -22,10 +22,10 @@ const ContactSection: React.FC = () => {
           <div>
             <h3 className="text-2xl font-semibold mb-6 text-white">Get In Touch</h3>
             <p className="text-gray-300 mb-8">
-              I'm currently available for freelance work, research collaborations, 
-              and full-time data science positions. If you have a project that you 
-              want to get started, think you need my help with something, or just 
-              want to say hello, then get in touch.
+              I'm currently available for research collaborations, internships, 
+              and project partnerships in data science and AI. If you have an interesting 
+              project that you want to discuss, think you need my help with something, 
+              or just want to say hello, then get in touch.
             </p>
             
             <div className="space-y-6">
@@ -33,7 +33,7 @@ const ContactSection: React.FC = () => {
                 <Mail className="text-neural-accent mr-4" size={24} />
                 <div>
                   <p className="text-gray-400">Email</p>
-                  <p className="text-white">johndoe@example.com</p>
+                  <p className="text-white">rikinpithadia98@gmail.com</p>
                 </div>
               </div>
               
@@ -41,7 +41,7 @@ const ContactSection: React.FC = () => {
                 <Phone className="text-neural-accent mr-4" size={24} />
                 <div>
                   <p className="text-gray-400">Phone</p>
-                  <p className="text-white">+1 (555) 123-4567</p>
+                  <p className="text-white">+91 6353865443</p>
                 </div>
               </div>
               
@@ -49,8 +49,38 @@ const ContactSection: React.FC = () => {
                 <MapPin className="text-neural-accent mr-4" size={24} />
                 <div>
                   <p className="text-gray-400">Location</p>
-                  <p className="text-white">San Francisco, CA</p>
+                  <p className="text-white">Gandhinagar, Gujarat, India</p>
                 </div>
+              </div>
+            </div>
+            
+            <div className="mt-8">
+              <h4 className="text-xl font-semibold mb-4 text-white">Connect With Me</h4>
+              <div className="flex gap-4">
+                <a 
+                  href="https://github.com/rikin-2911" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-neural-lighter p-3 rounded-full text-white hover:bg-neural-accent transition-colors"
+                >
+                  <Github size={24} />
+                </a>
+                <a 
+                  href="https://www.linkedin.com/in/rikin-pithadia-20b94729b" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-neural-lighter p-3 rounded-full text-white hover:bg-neural-accent transition-colors"
+                >
+                  <Linkedin size={24} />
+                </a>
+                <a 
+                  href="https://www.instagram.com/rikin_2911/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-neural-lighter p-3 rounded-full text-white hover:bg-neural-accent transition-colors"
+                >
+                  <Instagram size={24} />
+                </a>
               </div>
             </div>
           </div>

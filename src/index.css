@@ -68,4 +68,12 @@
   .section-heading {
     @apply text-3xl md:text-4xl font-bold mb-8 gradient-heading;
   }
+  
+  .interactive-neural {
+    @apply cursor-pointer;
+  }
+  
+  .keyword-tag {
+    @apply px-3 py-1 rounded-full bg-neural-lighter/50 text-neural-node font-bold italic transition-all duration-300 hover:bg-neural-lighter hover:scale-105;
+  }
 }
