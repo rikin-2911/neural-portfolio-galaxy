@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Github, ExternalLink } from 'lucide-react';
+import { Github } from 'lucide-react';
 
 interface ProjectCardProps {
   title: string;
@@ -10,7 +10,6 @@ interface ProjectCardProps {
   image: string;
   tags: string[];
   githubUrl?: string;
-  liveUrl?: string;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -19,7 +18,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   image,
   tags,
   githubUrl,
-  liveUrl,
 }) => {
   return (
     <Card className="overflow-hidden bg-neural-lighter border-neural-lighter card-hover">
@@ -46,26 +44,17 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         </div>
       </CardContent>
       
-      <CardFooter className="flex justify-between">
+      <CardFooter className="flex justify-start">
         {githubUrl && (
           <a 
             href={githubUrl} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-gray-300 hover:text-white transition-colors"
+            className="text-gray-300 hover:text-white transition-colors flex items-center gap-2"
+            aria-label={`View ${title} on GitHub`}
           >
             <Github size={20} />
-          </a>
-        )}
-        
-        {liveUrl && (
-          <a 
-            href={liveUrl} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-gray-300 hover:text-white transition-colors"
-          >
-            <ExternalLink size={20} />
+            <span>View on GitHub</span>
           </a>
         )}
       </CardFooter>
